@@ -53,8 +53,10 @@ if __name__=='__main__':
     DATABASE="manjesh38"
     Collection="NetworkData"
     networkobj=NetworkDataExtract()
+    ## convert data into json format
     records=networkobj.csv_to_json_convertor(file_path=FILE_PATH)
     print(records)
+    ## After converting data into json format insert data into mongodb
     no_of_records=networkobj.insert_data_mongodb(records,DATABASE,Collection)
     print(no_of_records)
         
