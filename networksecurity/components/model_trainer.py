@@ -26,6 +26,8 @@ from sklearn.ensemble import (
 
 import mlflow
 
+import dagshub
+dagshub.init(repo_owner='MANJESH38', repo_name='networksecurity', mlflow=True)
 
 
 
@@ -128,7 +130,7 @@ class ModelTrainer:
         ## dono ko preprocessor and model ko ek saath rakh diye jisse data clean and prediction ek saath ho jayega
         save_object(self.model_trainer_config.trained_model_file_path,obj=NetworkModel)
         #model pusher
-        ##save_object("final_model/model.pkl",best_model)
+        save_object("final_model/model.pkl",best_model)
         
 
         ## Model Trainer Artifact
