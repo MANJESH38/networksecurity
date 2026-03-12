@@ -22,6 +22,7 @@ MONGO_DB_URL=os.getenv("MONGO_DB_URL")
 class DataIngestion:
     def __init__(self,data_ingestion_config:DataIngestionConfig):
         try:
+            ## sara config store kar rahe hai dataIngestion class se
             self.data_ingestion_config=data_ingestion_config
         except Exception as e:
             raise NetworkSecurityException(e,sys)
@@ -31,15 +32,18 @@ class DataIngestion:
         Read data from mongodb
         """
         try:
+            ## writing a simple query to read data from mongodb
             database_name=self.data_ingestion_config.database_name
             collection_name=self.data_ingestion_config.collection_name
             self.mongo_client=pymongo.MongoClient(MONGO_DB_URL)
             collection=self.mongo_client[database_name][collection_name]
-
+            ## yaha pe mongo db se data dataframe me convert kr rhe hai
             df=pd.DataFrame(list(collection.find()))
+            ## usme by default mongodb se data read krne pe id column rhta hai usse drop kr rhe hai
             if "_id" in df.columns.to_list():
                 df=df.drop(columns=["_id"],axis=1)
             
+            ## agar dataframe me na value hoga toh usse nan se replace kr diye
             df.replace({"na":np.nan},inplace=True)
             return df
         except Exception as e:
@@ -51,6 +55,7 @@ class DataIngestion:
             #creating folder
             dir_path = os.path.dirname(feature_store_file_path)
             os.makedirs(dir_path,exist_ok=True)
+            ## convert dataframe into csv file and save kr diya feature store me
             dataframe.to_csv(feature_store_file_path,index=False,header=True)
             return dataframe
             
@@ -67,7 +72,7 @@ class DataIngestion:
             logging.info(
                 "Exited split_data_as_train_test method of Data_Ingestion class"
             )
-            
+            ## ye mera train and test file path jaha save hoga wo folder ka name hai
             dir_path = os.path.dirname(self.data_ingestion_config.training_file_path)
             
             os.makedirs(dir_path, exist_ok=True)
@@ -93,6 +98,7 @@ class DataIngestion:
             dataframe=self.export_collection_as_dataframe()
             dataframe=self.export_data_into_feature_store(dataframe)
             self.split_data_as_train_test(dataframe)
+            ## output of the dataIngestion component is trined file path and test file path and their is crate dataingestion artifact
             dataingestionartifact=DataIngestionArtifact(trained_file_path=self.data_ingestion_config.training_file_path,
                                                         test_file_path=self.data_ingestion_config.testing_file_path)
             return dataingestionartifact

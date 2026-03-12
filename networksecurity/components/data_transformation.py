@@ -64,6 +64,7 @@ class DataTransformation:
         logging.info("Entered initiate_data_transformation method of DataTransformation class")
         try:
             logging.info("Starting data transformation")
+            ## valid train and test data ko read kr liye yaha pe
             train_df=DataTransformation.read_data(self.data_validation_artifact.valid_train_file_path)
             test_df=DataTransformation.read_data(self.data_validation_artifact.valid_test_file_path)
 
@@ -76,22 +77,22 @@ class DataTransformation:
             input_feature_test_df = test_df.drop(columns=[TARGET_COLUMN], axis=1)
             target_feature_test_df = test_df[TARGET_COLUMN]
             target_feature_test_df = target_feature_test_df.replace(-1, 0)
-
+            ## yaha pe function initialize kiya
             preprocessor=self.get_data_transformer_object()
-
+            ## yaha pe train and test data pe fit-transform and transform test data pe lagaye hai aur isme target feature drop hai
             preprocessor_object=preprocessor.fit(input_feature_train_df)
             transformed_input_train_feature=preprocessor_object.transform(input_feature_train_df)
             transformed_input_test_feature =preprocessor_object.transform(input_feature_test_df)
              
-
+            ## yaha pe c_ hum combine krenge input feature and target feature ko array me convert krke
             train_arr = np.c_[transformed_input_train_feature, np.array(target_feature_train_df) ]
             test_arr = np.c_[ transformed_input_test_feature, np.array(target_feature_test_df) ]
 
-            #save numpy array data
+            #save numpy array data for a specific folder
             save_numpy_array_data( self.data_transformation_config.transformed_train_file_path, array=train_arr, )
             save_numpy_array_data( self.data_transformation_config.transformed_test_file_path,array=test_arr,)
             save_object( self.data_transformation_config.transformed_object_file_path, preprocessor_object,)
-
+             ## preprocessing.pkl file ko push kr rhe hai final_model me their is model pusher
             save_object( "final_model/preprocessor.pkl", preprocessor_object,)
 
 

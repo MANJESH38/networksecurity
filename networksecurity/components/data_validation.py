@@ -39,7 +39,9 @@ class DataValidation:
         
     def detect_dataset_drift(self,base_df,current_df,threshold=0.05)->bool:
         try:
+            ## by default status is true mtlb data drift nhi hua
             status=True
+            ## this is a dict variable ye data drift ka report store krega
             report={}
             for column in base_df.columns:
                 d1=base_df[column]
@@ -68,6 +70,7 @@ class DataValidation:
     
     def initiate_data_validation(self)->DataValidationArtifact:
         try:
+            ## data ingestion artifact se train file path and test file path le liye
             train_file_path=self.data_ingestion_artifact.trained_file_path
             test_file_path=self.data_ingestion_artifact.test_file_path
 
@@ -76,29 +79,32 @@ class DataValidation:
             test_dataframe=DataValidation.read_data(test_file_path)
             
             ## validate number of columns
-
+             ## train data ke liye
             status=self.validate_number_of_columns(dataframe=train_dataframe)
             if not status:
                 error_message=f"Train dataframe does not contain all columns.\n"
+                ##test data ke liye
             status = self.validate_number_of_columns(dataframe=test_dataframe)
             if not status:
                 error_message=f"Test dataframe does not contain all columns.\n"   
 
             ## lets check datadrift
             status=self.detect_dataset_drift(base_df=train_dataframe,current_df=test_dataframe)
+            ## agar status is true toh hmm isse valid train file path me save krenge
             dir_path=os.path.dirname(self.data_validation_config.valid_train_file_path)
             os.makedirs(dir_path,exist_ok=True)
-
+            ## yaha pe status true ho gya hai isko csv file me save kr rhe hai
             train_dataframe.to_csv(
                 self.data_validation_config.valid_train_file_path, index=False, header=True
 
             )
-
+            ## same for test file me bhi kr rhe hai
             test_dataframe.to_csv(
                 self.data_validation_config.valid_test_file_path, index=False, header=True
             )
             
             data_validation_artifact = DataValidationArtifact(
+                ## yaha pe status true hoga tabhi aage ka process hoga
                 validation_status=status,
                 valid_train_file_path=self.data_ingestion_artifact.trained_file_path,
                 valid_test_file_path=self.data_ingestion_artifact.test_file_path,

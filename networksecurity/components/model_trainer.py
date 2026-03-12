@@ -41,16 +41,16 @@ class ModelTrainer:
             self.data_transformation_artifact=data_transformation_artifact
         except Exception as e:
             raise NetworkSecurityException(e,sys)
-        
+      ## ye function mlflow se poore project ko track kr rha hai  
     def track_mlflow(self,best_model,classificationmetric):
-        
+        ## Experiment run start hota hai
         with mlflow.start_run():
             f1_score=classificationmetric.f1_score
             precision_score=classificationmetric.precision_score
             recall_score=classificationmetric.recall_score
 
             
-
+         ## mlflow ui me ye sab dikh jayega
             mlflow.log_metric("f1_score",f1_score)
             mlflow.log_metric("precision",precision_score)
             mlflow.log_metric("recall_score",recall_score)
@@ -109,7 +109,7 @@ class ModelTrainer:
         ]
         best_model = models[best_model_name]
         y_train_pred=best_model.predict(X_train)
-
+        ## yaha se hmme recall precision f1 score mil jayega
         classification_train_metric=get_classification_score(y_true=y_train,y_pred=y_train_pred)
         
         ## Track the experiements with mlflow
@@ -118,17 +118,17 @@ class ModelTrainer:
 
         y_test_pred=best_model.predict(x_test)
         classification_test_metric=get_classification_score(y_true=y_test,y_pred=y_test_pred)
-
+          ## also doing for the test metrics
         self.track_mlflow(best_model,classification_test_metric)
-
+         ## loading the preprocesson pkl file
         preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
-            
+        ## create krenge model directory agar nhi hai toh model trainer config me jaha pe model save krna hai    
         model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
         os.makedirs(model_dir_path,exist_ok=True)
-
+        ## abb hmm jayenge networkmodel me jo estimator file me ek saath preprocessor and model ko rakhe hue hai waha  se hmme y_pred mil jayega
         Network_Model=NetworkModel(preprocessor=preprocessor,model=best_model)
         ## dono ko preprocessor and model ko ek saath rakh diye jisse data clean and prediction ek saath ho jayega
-        save_object(self.model_trainer_config.trained_model_file_path,obj=NetworkModel)
+        save_object(self.model_trainer_config.trained_model_file_path,obj=Network_Model)
         #model pusher
         save_object("final_model/model.pkl",best_model)
         
@@ -157,7 +157,7 @@ class ModelTrainer:
             #loading training array and testing array
             train_arr = load_numpy_array_data(train_file_path)
             test_arr = load_numpy_array_data(test_file_path)
-
+            ## we create x_train,y_train,x_test,y_test 
             x_train, y_train, x_test, y_test = (
                 train_arr[:, :-1],
                 train_arr[:, -1],

@@ -80,13 +80,17 @@ def evaluate_models(X_train, y_train,X_test,y_test,models,param):
         report = {}
 
         for i in range(len(list(models))):
+            ## take the model values and params one by one
             model = list(models.values())[i]
+            ## yaha pe params ka key name lenge aur one by one explore krenge
             para=param[list(models.keys())[i]]
-
+            ## common technique jo hoti hai hyperparameter tuning ke liye
             gs = GridSearchCV(model,para,cv=3)
+            
             gs.fit(X_train,y_train)
-
+            ## yaha pe best params ko model me set krdenge
             model.set_params(**gs.best_params_)
+            ## aur yaha pe train krdenge
             model.fit(X_train,y_train)
 
             #model.fit(X_train, y_train)  # Train model
@@ -98,7 +102,7 @@ def evaluate_models(X_train, y_train,X_test,y_test,models,param):
             train_model_score = r2_score(y_train, y_train_pred)
 
             test_model_score = r2_score(y_test, y_test_pred)
-
+            ## yaha pe report me add krenege test model score as my value
             report[list(models.keys())[i]] = test_model_score
 
         return report

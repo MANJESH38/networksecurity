@@ -1,7 +1,9 @@
 import os
 import sys
 import json
+ 
 
+ ##environment variables load kar raha hai and secure MongoDB connection ke liye certificates set kar raha hai 
 from dotenv import load_dotenv
 load_dotenv()
 
